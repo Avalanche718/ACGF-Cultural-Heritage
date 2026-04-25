@@ -1,0 +1,11 @@
+torch>=2.4.0
+torchaudio
+diffusers
+transformers
+gradio>=4.0
+librosa
+soundfile
+scipy
+numpy
+matplotlib
+tqdm
