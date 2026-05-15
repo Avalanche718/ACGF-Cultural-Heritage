@@ -1,12 +1,17 @@
-# ACGF: Authenticity-Constrained Generative Framework
+# Audio Samples - American Folk & Old Time
 
-**Authenticity-Creativity Trade-offs in Generative AI Representations of Cultural Heritage: Voice AI Integration in Music Reconstruction**
+**Samples Included:**
 
-Official prototype repository for the research paper.
+1. **`american_old_time_sample.wav`**  
+   → American Old Time music sample
 
-### Setup Instructions
+2. **`american_folk_sample.wav`**  
+   → American Folk music sample
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Avalanche718/ACGF-Cultural-Heritage.git
-   cd ACGF-Cultural-Heritage
+These samples were used for testing the ACGF framework on American cultural heritage music, as requested by the client.
+
+They support the cross-cultural validation part of Table 1 in the paper.
+
+**Note**: These are reference/generated samples demonstrating the framework's capability on American folk traditions.
+
+Last updated: May 2026
