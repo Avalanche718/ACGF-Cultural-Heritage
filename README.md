@@ -1,12 +1,12 @@
-# Important - Download AI Models
+# ACGF: Authenticity-Constrained Generative Framework
 
-Large models are **not** stored in this repo.
+**Authenticity-Creativity Trade-offs in Generative AI Representations of Cultural Heritage: Voice AI Integration in Music Reconstruction**
 
-Please download them manually:
+Official prototype repository for the research paper.
 
-- **AudioLDM 2** (music generation): https://huggingface.co/cvssp/audioldm2-music
-- **DiffSinger**: https://github.com/MoonInTheRiver/DiffSinger
-- **Fish Speech S2-Pro**: https://huggingface.co/fishaudio/s2-pro
-- **CosyVoice 2**: https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B
+### Setup Instructions
 
-After downloading, place them in the `models/` folder or update the paths in the code.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Avalanche718/ACGF-Cultural-Heritage.git
+   cd ACGF-Cultural-Heritage
