@@ -2,6 +2,7 @@ torch>=2.4.0
 torchaudio
 diffusers
 transformers
+accelerate
 gradio>=4.0
 librosa
 soundfile
@@ -9,3 +10,7 @@ scipy
 numpy
 matplotlib
 tqdm
+
+# Voice synthesis backbones (DiffSinger / Fish Speech / CosyVoice) are NOT on
+# PyPI and are not installed via this file. See "Model Setup" in README.md
+# for clone + install instructions for each.
