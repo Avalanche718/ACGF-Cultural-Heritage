@@ -1,11 +1,13 @@
 torch>=2.4.0
 torchaudio
+torchcodec
 diffusers
 transformers
 accelerate
 gradio>=4.0
 librosa
 soundfile
+audioread
 scipy
 numpy
 matplotlib
