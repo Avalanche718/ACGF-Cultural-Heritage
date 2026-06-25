@@ -84,7 +84,7 @@ def generate_instrumental(pipe, text_prompt: str, duration_seconds: float = 10.0
 
 
 def voice_synthesis(instrumental_audio, reference_audio, constraint_strength: float,
-                     backbone: str = "fish_speech"):
+                     lyrics_text: str, backbone: str = "fish_speech"):
     """
     Step 2: constrained voice reconstruction (paper §3.3).
 
@@ -102,6 +102,12 @@ def voice_synthesis(instrumental_audio, reference_audio, constraint_strength: fl
                          needs a different integration shape, not just a stub fill-in.
                          Raises NotImplementedError below. See README for details.
 
+    lyrics_text: the actual words to sing/speak. Required - there's no way to
+    synthesize vocals without text content. For now this is plain text passed
+    straight to Fish Speech; DiffSinger (when wired) would need this converted
+    to a phoneme/score alignment instead, which is part of why that backbone
+    needs more design work than a simple parameter swap.
+
     constraint_strength bounds how far synthesis can drift from reference_audio's
     timbre/prosody - this is style-transfer within bounds, not full voice cloning.
     The actual authenticity gating happens in Step 3's discriminator loop; this
@@ -113,6 +119,8 @@ def voice_synthesis(instrumental_audio, reference_audio, constraint_strength: fl
     """
     if backbone in ("fish_speech", "cosyvoice") and reference_audio is None:
         raise ValueError(f"{backbone} requires reference_audio for style transfer.")
+    if not lyrics_text:
+        raise ValueError("lyrics_text is required - voice synthesis needs text content to sing/speak.")
 
     if backbone == "fish_speech":
         # Verified against https://github.com/fishaudio/fish-speech @ e5e2926 (2026-06-09)
@@ -149,7 +157,7 @@ def voice_synthesis(instrumental_audio, reference_audio, constraint_strength: fl
         # ServeReferenceAudio expects raw audio bytes, not a waveform array -
         # convert reference_audio (path or array) to bytes before calling this.
         request = ServeTTSRequest(
-            text=lyrics_or_score_text,
+            text=lyrics_text,
             references=[ServeReferenceAudio(audio=reference_audio, text="")],
         )
         results = list(engine.inference(request))
@@ -226,12 +234,21 @@ def iterative_refinement(instrumental, vocals, reference_audio=None,
     )
 
 
-def acgf_pipeline(text_prompt: str, reference_audio=None, constraint_strength: float = 0.8,
-                   duration_seconds: float = 10.0, seed: int | None = None,
-                   voice_backbone: str = "fish_speech", discriminator=None):
+def acgf_pipeline(text_prompt: str, lyrics_text: str = None, reference_audio=None,
+                   constraint_strength: float = 0.8, duration_seconds: float = 10.0,
+                   seed: int | None = None, voice_backbone: str = "fish_speech",
+                   discriminator=None):
     """
     Main ACGF Pipeline with real model loading structure.
+
+    text_prompt: describes the instrumental style/mood for AudioLDM 2 (Step 1).
+    lyrics_text: the actual words for the vocal line (Step 2) - separate from
+    text_prompt since one describes a sound, the other is content to be sung.
+    Defaults to text_prompt if not given, since for a simple demo the prompt
+    itself is often usable as a vocal line, but pass it explicitly for
+    anything beyond quick testing.
     """
+    lyrics_text = lyrics_text or text_prompt
     print("🚀 Starting ACGF Pipeline...")
     print(f"Prompt: {text_prompt}")
     print(f"Authenticity Constraint Strength: {constraint_strength}")
@@ -245,7 +262,8 @@ def acgf_pipeline(text_prompt: str, reference_audio=None, constraint_strength: f
 
         # Step 2: Constrained voice reconstruction
         print("\n[2/3] Reconstructing vocals with Voice AI (DiffSinger / Fish Speech / CosyVoice)...")
-        vocals = voice_synthesis(instrumental, reference_audio, constraint_strength, backbone=voice_backbone)
+        vocals = voice_synthesis(instrumental, reference_audio, constraint_strength,
+                                  lyrics_text, backbone=voice_backbone)
         print(f"   → Voice AI reconstruction complete ({voice_backbone})")
 
         # Step 3: Apply Authenticity Constraints + Refinement
